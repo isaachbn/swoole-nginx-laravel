@@ -1,0 +1,50 @@
+version: '3.7'
+
+services:
+  app:
+    image: teamsevenn/repository-name/uready-app
+    build: ./docker/app
+    depends_on:
+      - db
+    volumes:
+      - ./:/var/www/
+    networks:
+      - swoole
+
+  web:
+    depends_on:
+      - app
+    build: ./docker/web
+    ports:
+      - $NGINX_HTTP:80
+      - $NGINX_HTTPS:443
+    volumes:
+      - ./:/var/www/
+    restart: on-failure:5
+    networks:
+      - swoole
+
+  db:
+    image: mariadb:10.5
+    env_file:
+      - .env
+    restart: on-failure:5
+    environment:
+      MYSQL_DATABASE: $DB_DATABASE
+      MYSQL_USER: $DB_USERNAME
+      MYSQL_PORT: $DB_PORT
+      MYSQL_PASSWORD: $DB_PASSWORD
+      MYSQL_ROOT_PASSWORD: $DB_PASSWORD
+      TZ: "America/Sao_Paulo"
+    networks:
+      - swoole
+
+  redis:
+    image: redis:5.0.7-alpine
+    networks:
+      - swoole
+
+networks:
+  swoole:
+    name: swoole
+    driver: bridge
