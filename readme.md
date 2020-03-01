@@ -20,7 +20,7 @@
 ### Install
 
     cp .env.example .env
-    docker-compose -f docker-compose.yml up --build -d --scale app=2
+    docker-compose -f docker-compose.yml up --build -d --scale app=1
     
 ### Run Application
 
